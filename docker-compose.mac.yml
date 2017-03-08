@@ -1,0 +1,38 @@
+version: '2'
+
+services:
+    mysql:
+        image: mariadb
+        ports:
+            - 13306:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: web_db
+            MYSQL_USER: dev
+            MYSQL_PASSWORD: dev
+    web:
+        build:
+            context: .
+            args:
+                - USER_ID=$UID
+                - USER_NAME=$USER
+        ports:
+            - 10080:80
+        volumes:
+            - /var/www/html
+        depends_on:
+            - mysql
+        links:
+            - mysql
+    bg-sync:
+        image: cweagans/bg-sync
+        volumes:
+            - ..:/source
+        volumes_from:
+            - web
+        environment:
+            - SYNC_DESTINATION=/var/www/html
+            - SYNC_MAX_INOTIFY_WATCHES=40000
+            - SYNC_VERBOSE=1
+            - SYNC_EXTRA_UNISON_PROFILE_OPTS=ignore = Path var/*/*
+        privileged: true

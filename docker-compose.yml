@@ -1,0 +1,26 @@
+version: '2'
+
+services:
+    mysql:
+        image: mariadb
+        ports:
+            - 13306:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: web_deb
+            MYSQL_USER: dev
+            MYSQL_PASSWORD: dev
+    web:
+        build:
+            context: .
+            args:
+                - USER_ID=$UID
+                - USER_NAME=$USER
+        ports:
+            - 10080:80
+        volumes:
+            - ..:/var/www/html
+        depends_on:
+            - mysql
+        links:
+            - mysql
