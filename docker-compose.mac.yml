@@ -31,8 +31,13 @@ services:
         volumes_from:
             - web
         environment:
-            - SYNC_DESTINATION=/var/www/html
-            - SYNC_MAX_INOTIFY_WATCHES=40000
-            - SYNC_VERBOSE=1
-            - SYNC_EXTRA_UNISON_PROFILE_OPTS=ignore = Path var/*/*
+            SYNC_DESTINATION: /var/www/html
+            SYNC_MAX_INOTIFY_WATCHES: 40000
+            SYNC_VERBOSE: 1
+            # Below is an example for multiple "ignore" rules. If you only need one, you
+            # can simply use a one-liner: 'SYNC_EXTRA_UNISON_PROFILE_OPTS: "ignore = Path foo"' 
+            SYNC_EXTRA_UNISON_PROFILE_OPTS: |
+                ignore = Name composer.phar
+                ignore = Path docs
+                ignore = Path var
         privileged: true
